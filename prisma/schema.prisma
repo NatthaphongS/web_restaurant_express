@@ -1,0 +1,75 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum OrderStatus {
+  WAITINGPAYMENT
+  WAITINGREVIEW
+  COOKING
+  WAITINGDELIVERY
+  COMPLETE
+  CANCLE
+}
+
+enum CatagoryMenu {
+  MAIN
+  DESSERT
+  DRINK
+}
+
+enum MenuStatus {
+  AVAILABLE
+  OUTOFSTOCK
+}
+
+model Member {
+  id        Int     @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String? @unique
+  mobile    String  @unique
+  address   String?
+  password  String
+  orders    Order[]
+}
+
+model Order {
+  id              Int           @id @default(autoincrement())
+  deliveryAddress String
+  summaryPrice    Int
+  status          OrderStatus
+  createAt        DateTime      @default(now())
+  paymentAt       DateTime      @default(now())
+  user            Member        @relation(fields: [memberId], references: [id])
+  memberId        Int
+  orderDetails    OrderDetail[]
+}
+
+model OrderDetail {
+  id      Int   @id @default(autoincrement())
+  amount  Int
+  price   Int
+  order   Order @relation(fields: [orderId], references: [id])
+  orderId Int
+  menu    Menu  @relation(fields: [menuId], references: [id])
+  menuId  Int
+}
+
+model Menu {
+  id           Int           @id @default(autoincrement())
+  nameMenu     String
+  catagory     CatagoryMenu
+  menuImage    String
+  description  String
+  price        Int
+  status       MenuStatus
+  orderDetails OrderDetail[]
+}
