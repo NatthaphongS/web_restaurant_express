@@ -30,14 +30,20 @@ enum MenuStatus {
   OUTOFSTOCK
 }
 
-model Member {
-  id        Int     @id @default(autoincrement())
+enum UserRole {
+  MEMBER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
   firstName String
   lastName  String
-  email     String? @unique
-  mobile    String  @unique
+  email     String?  @unique
+  mobile    String   @unique
   address   String?
   password  String
+  role      UserRole @default(MEMBER)
   orders    Order[]
 }
 
@@ -48,8 +54,8 @@ model Order {
   status          OrderStatus
   createAt        DateTime      @default(now())
   paymentAt       DateTime      @default(now())
-  user            Member        @relation(fields: [memberId], references: [id])
-  memberId        Int
+  user            User          @relation(fields: [userId], references: [id])
+  userId          Int
   orderDetails    OrderDetail[]
 }
 
