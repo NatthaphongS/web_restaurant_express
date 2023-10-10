@@ -11,13 +11,29 @@ exports.register = async (req, res, next) => {
     if (error) {
       return next(error);
     }
+    const checkEmailOrMobile = await prisma.user.findFirst({
+      where: {
+        OR: [{ mobile: value.mobile }, { email: value.email }],
+      },
+    });
+    if (
+      checkEmailOrMobile.email == value.email &&
+      checkEmailOrMobile.mobile == value.mobile
+    ) {
+      return next(createError(400, "Email and mobile number is already used"));
+    }
+    if (checkEmailOrMobile.mobile == value.mobile) {
+      return next(createError(400, "Mobile number is already used"));
+    }
+    if (checkEmailOrMobile.email == value.email) {
+      return next(createError(400, "Email is already used"));
+    }
+
     value.password = await bcrypt.hash(value.password, 12);
-    res.json(value);
 
     const user = await prisma.user.create({
       data: value,
     });
-    console.log(user);
     delete user.password;
     const payload = { userId: user.id, userRole: user.role };
     const accessToken = jwt.sign(
