@@ -16,16 +16,17 @@ exports.register = async (req, res, next) => {
         OR: [{ mobile: value.mobile }, { email: value.email }],
       },
     });
+    console.log(checkEmailOrMobile);
     if (
-      checkEmailOrMobile.email == value.email &&
-      checkEmailOrMobile.mobile == value.mobile
+      checkEmailOrMobile?.email == value?.email &&
+      checkEmailOrMobile?.mobile == value?.mobile
     ) {
       return next(createError(400, "Email and mobile number is already used"));
     }
-    if (checkEmailOrMobile.mobile == value.mobile) {
+    if (checkEmailOrMobile?.mobile == value.mobile) {
       return next(createError(400, "Mobile number is already used"));
     }
-    if (checkEmailOrMobile.email == value.email) {
+    if (checkEmailOrMobile?.email == value?.email) {
       return next(createError(400, "Email is already used"));
     }
 
