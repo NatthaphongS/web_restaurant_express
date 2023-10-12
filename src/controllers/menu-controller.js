@@ -25,3 +25,18 @@ exports.createMenu = async (req, res, next) => {
     fs.unlink(req.file.path);
   }
 };
+
+exports.getMenu = async (req, res, next) => {
+  try {
+    const { catagory } = req.params;
+    // console.log(catagory);
+    const menus = await prisma.menu.findMany({
+      where: {
+        catagory: catagory,
+      },
+    });
+    res.status(200).json({ menus });
+  } catch (err) {
+    next(err);
+  }
+};

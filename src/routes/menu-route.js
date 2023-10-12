@@ -13,4 +13,6 @@ router.post(
   menuController.createMenu
 );
 
+router.get("/:catagory", menuController.getMenu);
+
 module.exports = router;
