@@ -40,3 +40,14 @@ exports.getMenu = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getAllMenu = async (req, res, next) => {
+  try {
+    const allMenus = await prisma.menu.findMany({
+      where: {},
+    });
+    res.status(200).json({ allMenus });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -12,7 +12,7 @@ router.post(
   uploadMulterMiddleWare.single("menuImage"),
   menuController.createMenu
 );
-
+router.get("/all", menuController.getAllMenu);
 router.get("/:catagory", menuController.getMenu);
 
 module.exports = router;
