@@ -50,7 +50,7 @@ model User {
 model Order {
   id              Int           @id @default(autoincrement())
   deliveryAddress String
-  summaryPrice    Int
+  summaryPrice    Decimal
   status          OrderStatus
   createAt        DateTime      @default(now())
   paymentAt       DateTime      @default(now())
@@ -60,22 +60,22 @@ model Order {
 }
 
 model OrderDetail {
-  id      Int   @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   amount  Int
-  price   Int
-  order   Order @relation(fields: [orderId], references: [id])
+  price   Decimal
+  order   Order   @relation(fields: [orderId], references: [id])
   orderId Int
-  menu    Menu  @relation(fields: [menuId], references: [id])
+  menu    Menu    @relation(fields: [menuId], references: [id])
   menuId  Int
 }
 
 model Menu {
   id           Int           @id @default(autoincrement())
-  nameMenu     String
+  menuName     String
   catagory     CatagoryMenu
   menuImage    String
-  description  String
-  price        Int
+  description  String?
+  price        Decimal
   status       MenuStatus
   orderDetails OrderDetail[]
 }
