@@ -6,9 +6,6 @@ const fs = require("fs/promises");
 
 exports.createMenu = async (req, res, next) => {
   try {
-    console.log("-------", req.body);
-    console.log("=======", req.file);
-
     const imgURL = await upload(req.file.path);
     const data = { ...req.body, menuImage: imgURL, price: +req.body.price };
     const { value, error } = createMenuSchema.validate(data);
@@ -18,7 +15,7 @@ exports.createMenu = async (req, res, next) => {
     const newMenu = await prisma.menu.create({
       data: value,
     });
-    res.status(200).json({ message: "Create menu success" });
+    res.status(200).json({ message: "Create menu success", newMenu });
   } catch (err) {
     next(createError(400, err));
   } finally {
@@ -47,6 +44,44 @@ exports.getAllMenu = async (req, res, next) => {
       where: {},
     });
     res.status(200).json({ allMenus });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.deleteMenu = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    await prisma.menu.delete({
+      where: {
+        id: +id,
+      },
+    });
+    res.status(200).json({ message: "Delete success" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.editMenu = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    let data = { ...req.body, price: +req.body.price };
+    if (req.file) {
+      const imgURL = await upload(req.file.path);
+      data = { ...data, menuImage: imgURL };
+    }
+    const { value, error } = createMenuSchema.validate(data);
+    if (error) {
+      next(error);
+    }
+    const editMenu = await prisma.menu.update({
+      data: value,
+      where: {
+        id: +id,
+      },
+    });
+    res.status(200).json({ message: "Edit menu success", editMenu });
   } catch (err) {
     next(err);
   }

@@ -14,5 +14,12 @@ router.post(
 );
 router.get("/all", menuController.getAllMenu);
 router.get("/:catagory", menuController.getMenu);
+router.patch(
+  "/edit/:id",
+  isAdminMiddleWare,
+  uploadMulterMiddleWare.single("menuImage"),
+  menuController.editMenu
+);
+router.delete("/delete/:id", isAdminMiddleWare, menuController.deleteMenu);
 
 module.exports = router;

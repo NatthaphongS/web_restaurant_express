@@ -5,7 +5,6 @@ const storage = multer.diskStorage({
     cb(null, "public");
   },
   filename: (req, file, cb) => {
-    console.log(file);
     const split = file.originalname.split(".");
     cb(
       null,
