@@ -13,7 +13,7 @@ router.post(
   menuController.createMenu
 );
 router.get("/all", menuController.getAllMenu);
-router.get("/:catagory", menuController.getMenu);
+router.get("/:category", menuController.getMenu);
 router.patch(
   "/edit/:id",
   isAdminMiddleWare,

@@ -25,11 +25,11 @@ exports.createMenu = async (req, res, next) => {
 
 exports.getMenu = async (req, res, next) => {
   try {
-    const { catagory } = req.params;
-    // console.log(catagory);
+    const { category } = req.params;
+    // console.log(category);
     const menus = await prisma.menu.findMany({
       where: {
-        catagory: catagory,
+        category: category,
       },
     });
     res.status(200).json({ menus });
@@ -66,6 +66,7 @@ exports.deleteMenu = async (req, res, next) => {
 exports.editMenu = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log(req.body);
     let data = { ...req.body, price: +req.body.price };
     if (req.file) {
       const imgURL = await upload(req.file.path);

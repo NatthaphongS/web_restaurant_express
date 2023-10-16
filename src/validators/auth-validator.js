@@ -3,7 +3,7 @@ const Joi = require("joi");
 exports.registerSchema = Joi.object({
   firstName: Joi.string().trim().required(),
   lastName: Joi.string().trim().required(),
-  email: Joi.string().email().allow(""),
+  email: Joi.string().email().allow("").allow(null),
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),

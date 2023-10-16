@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 
 const prisma = require("../models/prisma");
+const createError = require("../utils/create-error");
 
 module.exports = async (req, res, next) => {
   try {
@@ -19,7 +20,7 @@ module.exports = async (req, res, next) => {
       },
     });
     if (!user) {
-      return next(createError("Unanthenticated", 401));
+      return next(createError(401, "Unanthenticated"));
     }
     delete user.password;
     req.user = user;

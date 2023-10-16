@@ -19,7 +19,7 @@ enum OrderStatus {
   CANCLE
 }
 
-enum CatagoryMenu {
+enum CategoryMenu {
   MAIN
   DESSERT
   DRINK
@@ -72,7 +72,7 @@ model OrderDetail {
 model Menu {
   id           Int           @id @default(autoincrement())
   menuName     String
-  catagory     CatagoryMenu
+  category     CategoryMenu
   menuImage    String
   description  String?
   price        Decimal       @db.Decimal(10, 2)

@@ -29,6 +29,9 @@ exports.register = async (req, res, next) => {
     if (checkEmailOrMobile?.email == value?.email) {
       return next(createError(400, "Email is already used"));
     }
+    if (!value.email) {
+      delete value.email;
+    }
 
     value.password = await bcrypt.hash(value.password, 12);
 
