@@ -36,7 +36,7 @@ enum UserRole {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   firstName String
   lastName  String
   email     String?  @unique
@@ -48,14 +48,15 @@ model User {
 }
 
 model Order {
-  id              Int           @id @default(autoincrement())
+  id              String        @id @default(uuid())
   deliveryAddress String
   summaryPrice    Decimal       @db.Decimal(10, 2)
-  status          OrderStatus
-  createAt        DateTime      @default(now())
-  paymentAt       DateTime      @default(now())
+  status          OrderStatus   @default(WAITINGPAYMENT)
+  createdAt       DateTime      @default(now())
+  paymentImage    String
+  updatedAt       DateTime?
   user            User          @relation(fields: [userId], references: [id])
-  userId          Int
+  userId          String
   orderDetails    OrderDetail[]
 }
 
@@ -64,7 +65,7 @@ model OrderDetail {
   amount  Int
   price   Decimal @db.Decimal(10, 2)
   order   Order   @relation(fields: [orderId], references: [id])
-  orderId Int
+  orderId String
   menu    Menu    @relation(fields: [menuId], references: [id])
   menuId  Int
 }

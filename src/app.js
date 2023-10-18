@@ -8,6 +8,7 @@ const notFoundMiddleWare = require("./middlewares/not-found");
 const errorMiddleWare = require("./middlewares/error");
 const authRoute = require("./routes/auth-route");
 const menuRoute = require("./routes/menu-route");
+const orderRoute = require("./routes/order-route");
 
 const app = express();
 
@@ -18,6 +19,7 @@ app.use(express.json());
 
 app.use("/auth", authRoute);
 app.use("/menu", menuRoute);
+app.use("/order", orderRoute);
 
 app.use(notFoundMiddleWare);
 app.use(errorMiddleWare);

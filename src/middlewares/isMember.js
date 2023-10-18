@@ -12,7 +12,7 @@ module.exports = async (req, res, next) => {
       token,
       process.env.JWT_SECRET_KEY || "fdkslajfl"
     );
-    if (payload.userRole !== "ADMIN") {
+    if (payload.userRole !== "MEMBER") {
       return next(createError("Unanthenticated", 401));
     }
     next();
