@@ -56,6 +56,58 @@ exports.updateOrder = async (req, res, next) => {
   }
 };
 
+exports.getAllOrders = async (req, res, next) => {
+  try {
+    const allOrders = await prisma.order.findMany({
+      orderBy: {
+        updatedAt: "asc",
+      },
+    });
+    res.status(200).json(allOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.getTargetOrder = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    const output = await prisma.order.findFirst({
+      where: {
+        id,
+      },
+      select: {
+        id: true,
+        deliveryAddress: true,
+        summaryPrice: true,
+        orderDetails: {
+          select: {
+            id: true,
+            amount: true,
+            price: true,
+            menu: {
+              select: {
+                menuName: true,
+              },
+            },
+          },
+        },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            mobile: true,
+          },
+        },
+      },
+    });
+    res.status(200).json(output);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
 exports.getOrdering = async (req, res, next) => {
   try {
     const { userId } = req.params;

@@ -18,6 +18,12 @@ router.patch(
   isAdminMiddleWare,
   orderController.updateOrder
 );
+router.get("/allOrders", isAdminMiddleWare, orderController.getAllOrders);
+router.get(
+  "/orderTarget/:id",
+  isAdminMiddleWare,
+  orderController.getTargetOrder
+);
 router.get("/getOrdering/:userId", orderController.getOrdering);
 
 module.exports = router;
