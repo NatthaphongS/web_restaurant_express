@@ -13,12 +13,14 @@ router.post(
   uploadMulterMiddleWare.single("paymentImage"),
   orderController.createOrder
 );
-router.patch(
-  "/update/:orderId",
-  isAdminMiddleWare,
-  orderController.updateOrder
-);
+router.patch("/update/:id", isAdminMiddleWare, orderController.updateOrder);
+router.patch("/cancle/:id", orderController.cancleOrdering);
 router.get("/allOrders", isAdminMiddleWare, orderController.getAllOrders);
+router.get(
+  "/filterOrderById",
+  isAdminMiddleWare,
+  orderController.filterOrderById
+);
 router.get(
   "/orderTarget/:id",
   isAdminMiddleWare,

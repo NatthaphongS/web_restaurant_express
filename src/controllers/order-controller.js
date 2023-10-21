@@ -47,15 +47,6 @@ exports.createOrder = async (req, res, next) => {
   }
 };
 
-exports.updateOrder = async (req, res, next) => {
-  try {
-    console.log("hello update order");
-    res.status(200).json({ message: "hello update order" });
-  } catch (error) {
-    console.log(error);
-  }
-};
-
 exports.getAllOrders = async (req, res, next) => {
   try {
     const allOrders = await prisma.order.findMany({
@@ -64,6 +55,21 @@ exports.getAllOrders = async (req, res, next) => {
       },
     });
     res.status(200).json(allOrders);
+  } catch (error) {
+    next(error);
+  }
+};
+exports.filterOrderById = async (req, res, next) => {
+  try {
+    const filterOrder = await prisma.order.findMany({
+      where: {
+        id: req.params.id,
+      },
+      orderBy: {
+        updatedAt: "asc",
+      },
+    });
+    res.status(200).json(filterOrder);
   } catch (error) {
     next(error);
   }
@@ -81,6 +87,9 @@ exports.getTargetOrder = async (req, res, next) => {
         id: true,
         deliveryAddress: true,
         summaryPrice: true,
+        paymentImage: true,
+        comment: true,
+        status: true,
         orderDetails: {
           select: {
             id: true,
@@ -135,6 +144,39 @@ exports.getOrdering = async (req, res, next) => {
       },
     });
     res.status(200).json(ordering);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.cancleOrdering = async (req, res, next) => {
+  try {
+    const output = await prisma.order.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        comment: req.body.comment,
+        status: "CANCLE",
+      },
+    });
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.updateOrder = async (req, res, next) => {
+  try {
+    const output = await prisma.order.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        status: req.body.status,
+      },
+    });
+    res.status(200).json(output);
   } catch (error) {
     next(error);
   }
