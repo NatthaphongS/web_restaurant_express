@@ -17,15 +17,11 @@ router.patch("/update/:id", isAdminMiddleWare, orderController.updateOrder);
 router.patch("/cancle/:id", orderController.cancleOrdering);
 router.get("/allOrders", isAdminMiddleWare, orderController.getAllOrders);
 router.get(
-  "/filterOrderById",
-  isAdminMiddleWare,
-  orderController.filterOrderById
-);
-router.get(
   "/orderTarget/:id",
   isAdminMiddleWare,
   orderController.getTargetOrder
 );
-router.get("/getOrdering/:userId", orderController.getOrdering);
+router.get("/getTrackingOrder/:id", orderController.getTrackingOrder);
+router.get("/checkOrdering/:userId", orderController.checkOrdering);
 
 module.exports = router;

@@ -33,11 +33,27 @@ exports.createOrder = async (req, res, next) => {
           },
         },
         include: {
-          orderDetails: true,
+          orderDetails: {
+            select: {
+              amount: true,
+              price: true,
+              menu: {
+                select: {
+                  menuName: true,
+                },
+              },
+            },
+          },
+          user: {
+            select: {
+              firstName: true,
+              lastName: true,
+              mobile: true,
+            },
+          },
         },
       }),
     ]);
-
     const createdOrder = output[0];
     res.status(200).json({ message: "Created order success", createdOrder });
   } catch (error) {
@@ -55,21 +71,6 @@ exports.getAllOrders = async (req, res, next) => {
       },
     });
     res.status(200).json(allOrders);
-  } catch (error) {
-    next(error);
-  }
-};
-exports.filterOrderById = async (req, res, next) => {
-  try {
-    const filterOrder = await prisma.order.findMany({
-      where: {
-        id: req.params.id,
-      },
-      orderBy: {
-        updatedAt: "asc",
-      },
-    });
-    res.status(200).json(filterOrder);
   } catch (error) {
     next(error);
   }
@@ -117,23 +118,18 @@ exports.getTargetOrder = async (req, res, next) => {
   }
 };
 
-exports.getOrdering = async (req, res, next) => {
+exports.getTrackingOrder = async (req, res, next) => {
   try {
-    const { userId } = req.params;
-    const ordering = await prisma.order.findFirst({
+    const { id } = req.params;
+    const output = await prisma.order.findFirst({
       where: {
-        AND: [
-          { userId },
-          {
-            status: {
-              in: ["WAITINGPREVIEW", "COOKING", "WAITINGDELIVERY"],
-            },
-          },
-        ],
+        id,
       },
       include: {
         orderDetails: {
-          include: {
+          select: {
+            amount: true,
+            price: true,
             menu: {
               select: {
                 menuName: true,
@@ -141,9 +137,38 @@ exports.getOrdering = async (req, res, next) => {
             },
           },
         },
+        user: {
+          select: {
+            firstName: true,
+            lastName: true,
+            mobile: true,
+          },
+        },
       },
     });
-    res.status(200).json(ordering);
+    console.log(output);
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.checkOrdering = async (req, res, next) => {
+  try {
+    const output = await prisma.order.findFirst({
+      where: {
+        AND: [
+          { userId: req.params.userId },
+          {
+            status: {
+              in: ["WAITINGPREVIEW", "WAITINGDELIVERY", "COOKING"],
+            },
+          },
+        ],
+      },
+    });
+    console.log(output);
+    res.status(200).json(output);
   } catch (error) {
     next(error);
   }
