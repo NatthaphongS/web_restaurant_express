@@ -80,7 +80,7 @@ exports.getAllOrders = async (req, res, next) => {
 exports.getTargetOrder = async (req, res, next) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
     const output = await prisma.order.findFirst({
       where: {
         id,
@@ -115,16 +115,17 @@ exports.getTargetOrder = async (req, res, next) => {
     });
     res.status(200).json(output);
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
 exports.getTrackingOrder = async (req, res, next) => {
   try {
+    const userId = req.user.id;
     const { id } = req.params;
     const output = await prisma.order.findFirst({
       where: {
-        id,
+        AND: [{ userId }, { id }],
       },
       include: {
         orderDetails: {
@@ -148,7 +149,7 @@ exports.getTrackingOrder = async (req, res, next) => {
         },
       },
     });
-    console.log(output);
+    // console.log(output);
     res.status(200).json(output);
   } catch (error) {
     next(error);
@@ -169,7 +170,7 @@ exports.checkOrdering = async (req, res, next) => {
         ],
       },
     });
-    console.log(output);
+    // console.log(output);
     res.status(200).json(output);
   } catch (error) {
     next(error);
@@ -211,6 +212,15 @@ exports.updateOrder = async (req, res, next) => {
 
 exports.confirmDelivery = async (req, res, next) => {
   try {
+    const userId = req.user.id;
+    const getOrder = await prisma.order.findFirst({
+      where: {
+        id: req.params.id,
+      },
+    });
+    if (getOrder.userId != userId) {
+      next(createError(400, "You can't update this order"));
+    }
     const output = await prisma.order.update({
       where: {
         id: req.params.id,
