@@ -35,6 +35,7 @@ exports.createOrder = async (req, res, next) => {
         include: {
           orderDetails: {
             select: {
+              id: true,
               amount: true,
               price: true,
               menu: {
@@ -128,6 +129,7 @@ exports.getTrackingOrder = async (req, res, next) => {
       include: {
         orderDetails: {
           select: {
+            id: true,
             amount: true,
             price: true,
             menu: {
@@ -199,6 +201,22 @@ exports.updateOrder = async (req, res, next) => {
       },
       data: {
         status: req.body.status,
+      },
+    });
+    res.status(200).json(output);
+  } catch (error) {
+    next(error);
+  }
+};
+
+exports.confirmDelivery = async (req, res, next) => {
+  try {
+    const output = await prisma.order.update({
+      where: {
+        id: req.params.id,
+      },
+      data: {
+        status: "COMPLETE",
       },
     });
     res.status(200).json(output);

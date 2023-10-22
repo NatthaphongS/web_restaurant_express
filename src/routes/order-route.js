@@ -23,5 +23,6 @@ router.get(
 );
 router.get("/getTrackingOrder/:id", orderController.getTrackingOrder);
 router.get("/checkOrdering/:userId", orderController.checkOrdering);
+router.patch("/confirmDelivery/:id", orderController.confirmDelivery);
 
 module.exports = router;
