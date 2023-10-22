@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.post("/register", authController.register);
 router.post("/login", authController.login);
+router.patch("/editUser/:id", authController.editUser);
 router.get("/me", authenticateMiddleWare, authController.getMe);
 
 module.exports = router;

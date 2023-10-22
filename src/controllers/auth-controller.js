@@ -2,7 +2,11 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const prisma = require("../models/prisma");
-const { registerSchema, loginSchema } = require("../validators/auth-validator");
+const {
+  registerSchema,
+  loginSchema,
+  editSchema,
+} = require("../validators/auth-validator");
 const createError = require("../utils/create-error");
 
 exports.register = async (req, res, next) => {
@@ -46,6 +50,53 @@ exports.register = async (req, res, next) => {
       { expiresIn: process.env.JWT_EXPIRE }
     );
     res.status(201).json({ accessToken, user, message: "Register Success!!" });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.editUser = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { value, error } = editSchema.validate(req.body);
+    if (error) {
+      return next(error);
+    }
+    const checkEmailOrMobile = await prisma.user.findFirst({
+      where: {
+        OR: [{ mobile: value.mobile }, { email: value.email }],
+        NOT: {
+          id,
+        },
+      },
+    });
+    console.log(checkEmailOrMobile);
+    if (
+      checkEmailOrMobile?.email == value?.email &&
+      checkEmailOrMobile?.mobile == value?.mobile
+    ) {
+      return next(createError(400, "Email and mobile number is already used"));
+    }
+    if (checkEmailOrMobile?.mobile == value.mobile) {
+      return next(createError(400, "Mobile number is already used"));
+    }
+    if (checkEmailOrMobile?.email == value?.email) {
+      return next(createError(400, "Email is already used"));
+    }
+    if (!value.email) {
+      delete value.email; // make it to be null if it is empty string
+    }
+    if (!value.address) {
+      delete value.address;
+    }
+
+    const user = await prisma.user.update({
+      where: { id },
+      data: value,
+    });
+    delete user.password;
+    console.log(user);
+    res.status(201).json({ user, message: "Editer Success!!" });
   } catch (err) {
     next(err);
   }
