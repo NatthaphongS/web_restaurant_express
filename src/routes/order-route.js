@@ -38,5 +38,6 @@ router.patch(
   authenticateMiddleWare,
   orderController.confirmDelivery
 );
+router.get("/getSummary", isAdminMiddleWare, orderController.getSummary);
 
 module.exports = router;

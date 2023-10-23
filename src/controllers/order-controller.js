@@ -250,3 +250,46 @@ exports.confirmDelivery = async (req, res, next) => {
     next(error);
   }
 };
+
+exports.getSummary = async (req, res, next) => {
+  try {
+    const cancleResult =
+      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="CANCLE" group by date order by date desc limit 7`;
+    const newCancleResult = cancleResult.map((el) => {
+      console.log(el);
+      return { ...el, countOrder: Number(el.countOrder) };
+    });
+
+    const completeResult =
+      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="COMPLETE" group by date order by date desc limit 7`;
+    const newCompleteResult = completeResult.map((el) => {
+      return { ...el, countOrder: Number(el.countOrder) };
+    });
+
+    const totalMember = await prisma.user.groupBy({
+      by: ["role"],
+      _count: {
+        id: true,
+      },
+      where: {
+        role: "MEMBER",
+      },
+    });
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Set the time to the start of the day
+
+    const totalSummaryPrice =
+      await prisma.$queryRaw`SELECT sum(summaryPrice) AS totalSummaryPrice,date(createdAt) date FROM \`order\` where status="COMPLETE" group by date order by date desc limit 1`;
+
+    // console.log(totalSummaryPrice);
+    res.status(200).json({
+      newCompleteResult,
+      newCancleResult,
+      totalMember: totalMember[0]._count.id,
+      totalToday: totalSummaryPrice[0],
+    });
+  } catch (error) {
+    next(error);
+  }
+};

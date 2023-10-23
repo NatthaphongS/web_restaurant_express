@@ -7,6 +7,15 @@ exports.registerSchema = Joi.object({
   mobile: Joi.string()
     .pattern(/^[0-9]{10}$/)
     .required(),
+  password: Joi.string()
+    .pattern(/^[a-zA-Z0-9]{6,30}$/)
+    .trim()
+    .required(),
+  confirmPassword: Joi.string()
+    .valid(Joi.ref("password"))
+    .trim()
+    .required()
+    .strip(),
 });
 
 exports.loginSchema = Joi.object({
