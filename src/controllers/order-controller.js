@@ -77,6 +77,22 @@ exports.getAllOrders = async (req, res, next) => {
   }
 };
 
+exports.getHistoryOrder = async (req, res, next) => {
+  try {
+    const historyOrder = await prisma.order.findMany({
+      where: {
+        userId: req.user.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    res.status(200).json(historyOrder);
+  } catch (error) {
+    next(error);
+  }
+};
+
 exports.getTargetOrder = async (req, res, next) => {
   try {
     const { id } = req.params;

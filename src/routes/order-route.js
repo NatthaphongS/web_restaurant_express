@@ -18,6 +18,11 @@ router.patch("/update/:id", isAdminMiddleWare, orderController.updateOrder);
 router.patch("/cancle/:id", isAdminMiddleWare, orderController.cancleOrdering);
 router.get("/allOrders", isAdminMiddleWare, orderController.getAllOrders);
 router.get(
+  "/historyOrders",
+  authenticateMiddleWare,
+  orderController.getHistoryOrder
+);
+router.get(
   "/orderTarget/:id",
   isAdminMiddleWare,
   orderController.getTargetOrder
