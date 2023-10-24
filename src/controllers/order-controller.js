@@ -193,7 +193,7 @@ exports.checkOrdering = async (req, res, next) => {
   }
 };
 
-exports.cancleOrdering = async (req, res, next) => {
+exports.cancelOrdering = async (req, res, next) => {
   try {
     const output = await prisma.order.update({
       where: {
@@ -201,7 +201,7 @@ exports.cancleOrdering = async (req, res, next) => {
       },
       data: {
         comment: req.body.comment,
-        status: "CANCLE",
+        status: "CANCEL",
       },
     });
     res.status(200).json(output);
@@ -253,9 +253,9 @@ exports.confirmDelivery = async (req, res, next) => {
 
 exports.getSummary = async (req, res, next) => {
   try {
-    const cancleResult =
-      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="CANCLE" group by date order by date desc limit 7`;
-    const newCancleResult = cancleResult.map((el) => {
+    const cancelResult =
+      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="CANCEL" group by date order by date desc limit 7`;
+    const newCancelResult = cancelResult.map((el) => {
       console.log(el);
       return { ...el, countOrder: Number(el.countOrder) };
     });
@@ -285,7 +285,7 @@ exports.getSummary = async (req, res, next) => {
     // console.log(totalSummaryPrice);
     res.status(200).json({
       newCompleteResult,
-      newCancleResult,
+      newCancelResult,
       totalMember: totalMember[0]._count.id,
       totalToday: totalSummaryPrice[0],
     });

@@ -15,7 +15,7 @@ router.post(
   orderController.createOrder
 );
 router.patch("/update/:id", isAdminMiddleWare, orderController.updateOrder);
-router.patch("/cancle/:id", isAdminMiddleWare, orderController.cancleOrdering);
+router.patch("/cancel/:id", isAdminMiddleWare, orderController.cancelOrdering);
 router.get("/allOrders", isAdminMiddleWare, orderController.getAllOrders);
 router.get(
   "/historyOrders",
