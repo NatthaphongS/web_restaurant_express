@@ -1,8 +1,8 @@
-const prisma = require("../models/prisma");
-const createError = require("../utils/create-error");
-const { upload } = require("../utils/cloudinary-service");
-const fs = require("fs/promises");
-const { createOrderSchema } = require("../validators/order-validator");
+const prisma = require('../models/prisma');
+const createError = require('../utils/create-error');
+const { upload } = require('../utils/cloudinary-service');
+const fs = require('fs/promises');
+const { createOrderSchema } = require('../validators/order-validator');
 
 exports.createOrder = async (req, res, next) => {
   try {
@@ -56,7 +56,7 @@ exports.createOrder = async (req, res, next) => {
       }),
     ]);
     const createdOrder = output[0];
-    res.status(200).json({ message: "Created order success", createdOrder });
+    res.status(200).json({ message: 'Created order success', createdOrder });
   } catch (error) {
     next(error);
   } finally {
@@ -68,7 +68,7 @@ exports.getAllOrders = async (req, res, next) => {
   try {
     const allOrders = await prisma.order.findMany({
       orderBy: {
-        updatedAt: "asc",
+        updatedAt: 'asc',
       },
     });
     res.status(200).json(allOrders);
@@ -84,7 +84,7 @@ exports.getHistoryOrder = async (req, res, next) => {
         userId: req.user.id,
       },
       orderBy: {
-        createdAt: "desc",
+        createdAt: 'desc',
       },
     });
     res.status(200).json(historyOrder);
@@ -180,7 +180,7 @@ exports.checkOrdering = async (req, res, next) => {
           { userId: req.params.userId },
           {
             status: {
-              in: ["WAITINGPREVIEW", "WAITINGDELIVERY", "COOKING"],
+              in: ['WAITINGPREVIEW', 'WAITINGDELIVERY', 'COOKING'],
             },
           },
         ],
@@ -201,7 +201,7 @@ exports.cancelOrdering = async (req, res, next) => {
       },
       data: {
         comment: req.body.comment,
-        status: "CANCEL",
+        status: 'CANCEL',
       },
     });
     res.status(200).json(output);
@@ -242,7 +242,7 @@ exports.confirmDelivery = async (req, res, next) => {
         id: req.params.id,
       },
       data: {
-        status: "COMPLETE",
+        status: 'COMPLETE',
       },
     });
     res.status(200).json(output);
@@ -253,34 +253,52 @@ exports.confirmDelivery = async (req, res, next) => {
 
 exports.getSummary = async (req, res, next) => {
   try {
-    const cancelResult =
-      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="CANCEL" group by date order by date desc limit 7`;
+    const cancelResult = await prisma.$queryRaw`
+    SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
+    FROM order
+    WHERE status = "CANCEL"
+    GROUP BY date
+    ORDER BY date DESC
+    LIMIT 7
+  `;
     const newCancelResult = cancelResult.map((el) => {
       console.log(el);
       return { ...el, countOrder: Number(el.countOrder) };
     });
 
-    const completeResult =
-      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM \`order\` where status="COMPLETE" group by date order by date desc limit 7`;
+    const completeResult = await prisma.$queryRaw`
+      SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
+      FROM "order"
+      WHERE status = 'COMPLETE'
+      GROUP BY date
+      ORDER BY date DESC
+      LIMIT 7
+    `;
     const newCompleteResult = completeResult.map((el) => {
       return { ...el, countOrder: Number(el.countOrder) };
     });
 
     const totalMember = await prisma.user.groupBy({
-      by: ["role"],
+      by: ['role'],
       _count: {
         id: true,
       },
       where: {
-        role: "MEMBER",
+        role: 'MEMBER',
       },
     });
 
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set the time to the start of the day
 
-    const totalSummaryPrice =
-      await prisma.$queryRaw`SELECT sum(summaryPrice) AS totalSummaryPrice,date(createdAt) date FROM \`order\` where status="COMPLETE" group by date order by date desc limit 1`;
+    const totalSummaryPrice = await prisma.$queryRaw`
+      SELECT SUM(summaryPrice) AS totalSummaryPrice, DATE(createdAt) AS date
+      FROM "order"
+      WHERE status = 'COMPLETE'
+      GROUP BY date
+      ORDER BY date DESC
+      LIMIT 1
+    `;
 
     // console.log(totalSummaryPrice);
     res.status(200).json({
