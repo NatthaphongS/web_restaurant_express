@@ -253,27 +253,15 @@ exports.confirmDelivery = async (req, res, next) => {
 
 exports.getSummary = async (req, res, next) => {
   try {
-    const cancelResult = await prisma.$queryRaw`
-    SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
-    FROM "order"
-    WHERE status = "CANCEL"
-    GROUP BY date
-    ORDER BY date DESC
-    LIMIT 7
-  `;
+    const cancelResult =
+      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM "order" where status="CANCEL" group by date order by date desc limit 7`;
     const newCancelResult = cancelResult.map((el) => {
       console.log(el);
       return { ...el, countOrder: Number(el.countOrder) };
     });
 
-    const completeResult = await prisma.$queryRaw`
-      SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
-      FROM "order"
-      WHERE status = 'COMPLETE'
-      GROUP BY date
-      ORDER BY date DESC
-      LIMIT 7
-    `;
+    const completeResult =
+      await prisma.$queryRaw`SELECT COUNT(id)  AS countOrder,date(createdAt) date FROM "order" where status="COMPLETE" group by date order by date desc limit 7`;
     const newCompleteResult = completeResult.map((el) => {
       return { ...el, countOrder: Number(el.countOrder) };
     });
@@ -291,14 +279,8 @@ exports.getSummary = async (req, res, next) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0); // Set the time to the start of the day
 
-    const totalSummaryPrice = await await prisma.$queryRaw`
-  SELECT SUM(summaryPrice) AS totalSummaryPrice, DATE(createdAt) AS date
-  FROM "order"
-  WHERE status = 'COMPLETE'
-  GROUP BY date
-  ORDER BY date DESC
-  LIMIT 1
-`;
+    const totalSummaryPrice =
+      await prisma.$queryRaw`SELECT sum(summaryPrice) AS totalSummaryPrice,date(createdAt) date FROM "order" where status="COMPLETE" group by date order by date desc limit 1`;
 
     // console.log(totalSummaryPrice);
     res.status(200).json({
