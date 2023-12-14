@@ -255,7 +255,7 @@ exports.getSummary = async (req, res, next) => {
   try {
     const cancelResult = await prisma.$queryRaw`
       SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
-      FROM \`order\`
+      FROM \`Order\`
       WHERE status = "CANCEL"
       GROUP BY date
       ORDER BY date DESC
@@ -268,7 +268,7 @@ exports.getSummary = async (req, res, next) => {
 
     const completeResult = await prisma.$queryRaw`
       SELECT COUNT(id) AS countOrder, DATE(createdAt) AS date
-      FROM \`order\`
+      FROM \`Order\`
       WHERE status = 'COMPLETE'
       GROUP BY date
       ORDER BY date DESC
@@ -293,7 +293,7 @@ exports.getSummary = async (req, res, next) => {
 
     const totalSummaryPrice = await prisma.$queryRaw`
       SELECT SUM(summaryPrice) AS totalSummaryPrice, DATE(createdAt) AS date
-      FROM \`order\`
+      FROM \`Order\`
       WHERE status = 'COMPLETE'
       GROUP BY date
       ORDER BY date DESC
